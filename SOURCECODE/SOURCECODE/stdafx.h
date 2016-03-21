@@ -61,7 +61,7 @@ void swapBook (BOOK &, BOOK &);
 void sortYear (LIST);
 
 void delHead (LIST &);
-void delBook (LIST &);
+void deNode (LIST &);
 void delAll (NODE *&);
 
 void lookID(LIST);

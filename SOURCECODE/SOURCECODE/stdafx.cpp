@@ -41,58 +41,6 @@ int readBook (LIST &l)
 	Output(l); // in ra màn hình danh sách mới đọc được
 	return n;
 }
-// hàm ghi tiếp file dữ liệu
-void saveBook (LIST l, int n) 
-{
-	// mở file
-	FILE * fn = fopen("Data.txt","a");	 // mở file theo kiểu ghi tiếp
-
-	// duyệt tuần tự danh sách liên kết, đến phần tử cuối từ file ban đầu thì ghi tiếp
-	NODE *p = l.pHead; 
-	for(int i = 1; i < n + 1; i++) 
-		p = p->pNext; 
-	
-	while(p != NULL) // duyệt tuần tự cho hết danh sách sách mới thêm
-	{
-		// ghi lần lượt các thành phần ID, Name, Author, Year, PH của từng node mới
-		
-		fputs("\n\n", fn); // xuống dòng từ file cũ
-		fputs(p->info.ID, fn);
-		fputs("\n", fn); // mỗi thành phần ghi trên 1 dòng riêng biệt
-		fputs(p->info.Name, fn);
-		fputs("\n", fn);
-		fputs(p->info.Author, fn);
-		fputs("\n", fn);
-		fputs(p->info.Year, fn);
-		fputs("\n", fn);
-		fputs(p->info.PH, fn);
-		p = p->pNext;
-	}
-	// đóng file
-	fclose (fn);
-}
-
-// hàm ghi lại từ đầu file dữ liệu
-void saveBook2 (LIST l)
-{
-	FILE * fn = fopen("Data.txt","wt");	// mở file theo kiểu ghi lại từ đầu
-
-	// duyệt tuần tự từng node, và ghi lần lượt từng thành phần của info vào từng hàng riêng lẻ
-	// mỗi thành phần có chứa "\n" rồi nên không cần xuống dòng
-	NODE *p = l.pHead;
-	while(p != NULL) 
-	{
-		fputs("\n", fn);
-		fputs(p->info.ID, fn);
-		fputs(p->info.Name, fn);
-		fputs(p->info.Author, fn);
-		fputs(p->info.Year, fn);
-		fputs(p->info.PH, fn);
-		p = p->pNext;
-	}
-	// đóng file
-	fclose (fn);
-}
 
 // hàm nhập thông tin 1 quyển sách
 void imBook (BOOK &x)
@@ -180,11 +128,43 @@ void Input (LIST &l)
     Output(l);
 }
 
+// hàm ghi tiếp file dữ liệu sau khi Input thêm node
+void saveBook (LIST l, int n) 
+{
+	// mở file
+	FILE * fn = fopen("Data.txt","a");	 // mở file theo kiểu ghi tiếp
+
+	// duyệt tuần tự danh sách liên kết, đến phần tử cuối từ file ban đầu thì ghi tiếp
+	NODE *p = l.pHead; 
+	for(int i = 1; i < n + 1; i++) 
+		p = p->pNext; 
+	
+	while(p != NULL) // duyệt tuần tự cho hết danh sách sách mới thêm
+	{
+		// ghi lần lượt các thành phần ID, Name, Author, Year, PH của từng node mới
+		
+		fputs("\n\n", fn); // xuống dòng từ file cũ
+		fputs(p->info.ID, fn);
+		fputs("\n", fn); // mỗi thành phần ghi trên 1 dòng riêng biệt
+		fputs(p->info.Name, fn);
+		fputs("\n", fn);
+		fputs(p->info.Author, fn);
+		fputs("\n", fn);
+		fputs(p->info.Year, fn);
+		fputs("\n", fn);
+		fputs(p->info.PH, fn);
+		p = p->pNext;
+	}
+	// đóng file
+	fclose (fn);
+}
+
 // hàm xuất ra màn hình danh sách liên kết
 void Output (LIST l)
 {
 	int count = 0; // khởi tạo số thứ tự sách xuất ra màn hình
-	NODE *p = l.pHead; // duyệt tuần tự từng node và in ra phần info
+	// duyệt tuần tự từng node và in ra phần info
+	NODE *p = l.pHead; 
 	while(p != NULL)
 	{   
 		count ++;
@@ -194,28 +174,27 @@ void Output (LIST l)
 	}
 }
 
-// hàm hoán đổi quyển sách
-void swapBook (BOOK &a, BOOK &b)
+// hàm xóa node đầu
+void delHead (LIST &l) 
 {
-	BOOK x = a;
-	a = b;
-	b = x;
-}
+	if (l.pHead == NULL) // danh sách lk rỗng
+		return;
 
-// hàm sắp xếp danh sách, Interchange Sort
-void sortYear(LIST l)
-{
-	for(NODE * p = l.pHead; p; p = p->pNext) // node p chạy từ node đầu đến node kế cuối
-		for(NODE * k = p->pNext; k; k = k->pNext) // node k chạy từ node thứ hai đến node cuối
-			if(strcmp(p->info.Year, k->info.Year) > 0) // so sánh thông tin năm xuất bản của 2 node liền nhau
-				swapBook(p->info,k->info); // đổi chỗ hai quyển sách
+	else 
+	{
+		NODE *p = l.pHead;
 
-	printf("\n Danh sach cac quyen sach theo thu tu nam xuat ban tang dan:\n");
-	Output(l); // in ra màn hình danh sách theo thứ tự năm xuất bản tăng dần
+		if (l.pHead == l.pTail) // danh sách lk chỉ có 1 node
+			Init(l);
+		else // danh sách lk có nhiều hơn 1 node
+			l.pHead = l.pHead->pNext;
+
+		delete p;
+	}
 }
 
 // xóa node vị trí k
-void delBook (LIST &l) 
+void delNode (LIST &l) 
 {
 	int k;
 	printf("\n Nhap so thu tu sach muon xoa: ");
@@ -254,27 +233,29 @@ void delBook (LIST &l)
     Output(l);
 }
 
-// hàm xóa node đầu
-void delHead (LIST &l) 
+// hàm ghi lại từ đầu file dữ liệu sau khi xóa node
+void saveBook2 (LIST l)
 {
-	if (l.pHead == NULL) // danh sách lk rỗng
-		return;
-	else 
+	FILE * fn = fopen("Data.txt","wt");	// mở file theo kiểu ghi lại từ đầu
+
+	// duyệt tuần tự từng node, và ghi lần lượt từng thành phần của info vào từng hàng riêng lẻ
+	// mỗi thành phần có chứa "\n" rồi nên không cần xuống dòng
+	NODE *p = l.pHead;
+	while(p != NULL) 
 	{
-		NODE *p = l.pHead;
-
-		if (l.pHead == l.pTail) // danh sách lk chỉ có 1 node
-			Init(l);
-		else // danh sách lk có nhiều hơn 1 node
-			l.pHead = l.pHead->pNext;
-
-		delete p;
-
+		fputs("\n", fn);
+		fputs(p->info.ID, fn);
+		fputs(p->info.Name, fn);
+		fputs(p->info.Author, fn);
+		fputs(p->info.Year, fn);
+		fputs(p->info.PH, fn);
+		p = p->pNext;
 	}
-
+	// đóng file
+	fclose (fn);
 }
 
-// hàm xóa hết danh sách
+// hàm xóa hết các node danh sách => danh sách quay về trạng thái vừa khởi tạo
 void delAll(NODE* &p) 
 {
 	NODE *temp;
@@ -285,6 +266,26 @@ void delAll(NODE* &p)
 		delete temp;
 	}
 	p = NULL; // cập nhật lại danh sách rỗng
+}
+
+// hàm hoán đổi quyển sách
+void swapBook (BOOK &a, BOOK &b)
+{
+	BOOK x = a;
+	a = b;
+	b = x;
+}
+
+// hàm sắp xếp danh sách, Interchange Sort
+void sortYear(LIST l)
+{
+	for(NODE * p = l.pHead; p; p = p->pNext) // node p chạy từ node đầu đến node kế cuối
+		for(NODE * k = p->pNext; k; k = k->pNext) // node k chạy từ node thứ hai đến node cuối
+			if(strcmp(p->info.Year, k->info.Year) > 0) // so sánh thông tin năm xuất bản của 2 node liền nhau
+				swapBook(p->info,k->info); // đổi chỗ hai quyển sách
+
+	printf("\n Danh sach cac quyen sach theo thu tu nam xuat ban tang dan:\n");
+	Output(l); // in ra màn hình danh sách theo thứ tự năm xuất bản tăng dần
 }
 
 // tìm kiếm theo ID
@@ -300,7 +301,8 @@ void lookID (LIST l)
 	a[la] = '\n';
 	a[la+1] = '\0';
 
-	NODE *p = l.pHead; // duyệt tuần tự và so sánh từng thành phần ID có trùng với ID cần tìm
+	// duyệt tuần tự và so sánh từng thành phần ID có trùng với ID cần tìm
+	NODE *p = l.pHead; 
 	while(p != NULL)
 	{ 
 		i++;
@@ -399,13 +401,19 @@ void contApp (LIST l)
 	else
 		printf("\n Cam on ban da su dung ung dung. Hen gap lai !\n"); // nhập một ký tự bất kỳ thì in thông báo xin chào.
 }
+
 // hàm menu
 void Menu(LIST l)
 {
 	int n = readBook(l); // số node được tạo sau khi đọc file dữ liệu
 
 	int menu; // chọn chức năng menu
-	printf("\n Nhap:\n\n  - 1: de them sach.\n  - 2: de xoa sach.\n  - 3: de xuat danh sach theo thu tu nam xuat ban tang dan.\n  - 4: de tim kiem sach theo ID.\n  - 5: de dem so luong sach trong thu vien cua cung mot tac giac.\n  - 6: de xuat danh sach nhung quyen xuat ban cung mot nam cua mot nha xuat ban.\n Nhap: ");
+	printf("\n Nhap:\n\n  - 1: de them sach.");
+	printf("\n  - 2: de xoa sach.");
+	printf("\n  - 3: de xuat danh sach theo thu tu nam xuat ban tang dan.");
+	printf("\n  - 4: de tim kiem sach theo ID.");
+	printf("\n  - 5: de dem so luong sach trong thu vien cua cung mot tac gia.");
+	printf("\n  - 6: de xuat danh sach nhung quyen xuat ban cung mot nam cua mot nha xuat ban.\n Nhap: ");
 	scanf("%d", &menu);
 
 	switch(menu)
@@ -419,7 +427,7 @@ void Menu(LIST l)
 		}
 	case 2: // xóa sách
 		{   
-			delBook(l); // xóa sách
+			delNode(l); // xóa sách
 			saveBook2(l); // ghi lại từ đầu
 			contApp(l); // gọi hàm sử dụng tiếp
 			break;
